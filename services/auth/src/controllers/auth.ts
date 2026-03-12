@@ -2,11 +2,12 @@ import getBuffer from "../utils/buffer.js";
 import { sql } from "../utils/db.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { TryCatch } from "../utils/TryCatch.js";
-import bcrypt from "bcrypt"
+import bcrypt, { hash } from "bcrypt"
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import { forgotPasswordTemplate } from "../template.js";
 import { publishToTopic } from "../producer.js";
+import { redisClient } from "../index.js";
 
 
 export const registerUser = TryCatch(async(req , res , next)=>{
@@ -155,6 +156,11 @@ process.env.JWT_SEC as string ,
 );
 const resetLink = `${process.env.Frontend_Url}/reset/${resetToken}`
 
+await redisClient.set(`forgot:${email}` , resetToken , {
+  EX: 900,
+})
+
+
 const message = {
   to:email,
   subject: "RESET Your Password - hireHeaven",
@@ -169,3 +175,43 @@ res.json({
   message:"If that email exists , we have sent a reset link"
 });
 });
+
+
+export const resetPassword = TryCatch(async(req , res , next) => {
+  const { token } = req.params;
+  const { password } = req.body;
+const tokenString = typeof token === 'string' ? token : token[0];
+  let decoded:any;
+  try {
+    decoded=jwt.verify(tokenString , process.env.JWT_SEC as string)
+  } catch (error) {
+    throw new ErrorHandler(400 , "Expired token");
+  }
+
+  if(decoded.type !== "reset"){
+    throw new ErrorHandler(400 , "Invalid token type")
+  }
+
+
+  const email = decoded.email
+  const storedToken = await redisClient.get(`forgot:${email}`)
+  if(!storedToken || storedToken !== tokenString)
+  {
+    throw new ErrorHandler(400 , "toekn has been expired");
+  }
+
+  const users = await sql `SELECT user_id FROM users WHERE email = ${email}`
+
+  if(users.length ===0)
+  {
+    throw new ErrorHandler(404 , "User not found");
+  }
+  const user = users[0];
+const hashPassword = await bcrypt.hash(password , 10)
+await sql `UPDATE users SET password = ${hashPassword} WHERE user_id = ${user.user_id}`;
+
+await redisClient.del(`forgot:${email}`);
+
+res.json({message: "Password changed successfully"})
+
+})
