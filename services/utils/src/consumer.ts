@@ -30,8 +30,8 @@ await consumer.run({
         port : 465,
         secure : true,
         auth : {
-          user : "220020057@iitdh.ac.in" ,
-          pass : "fgepnntbvbputule"
+          user : process.env.SMTP_USER ,
+          pass : process.env.SMTP_PASS
         }
       });
 
