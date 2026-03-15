@@ -199,7 +199,7 @@ export const getCompanyDetails = TryCatch(async(req:AuthenticatedRequest , res) 
 })
 
 
-export const getAllActiveJobs = TryCatch(async(req : AuthenticatedRequest,res) => {
+export const getAllActiveJobs = TryCatch(async(req ,res) => {
   const {title , location} = req.query as {
     title?: string;
     location?: string;
@@ -228,5 +228,13 @@ export const getAllActiveJobs = TryCatch(async(req : AuthenticatedRequest,res) =
   const jobs = (await sql.query(querySting , values)) as any[];
 
   res.json(jobs);
+})
 
+
+export const getSingleJob = TryCatch(async(req,res)=>{
+ const [job] = await sql `
+ SELECT * FROM jobs WHERE job_id = ${req.params.jobId}
+ `;
+
+ res.json(job)
 })
