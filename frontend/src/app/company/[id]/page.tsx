@@ -575,7 +575,7 @@ variant={"outline"} size={"sm"} className="gap-2">
  <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
-Post a new job
+Update Job
             </DialogTitle>
         </DialogHeader>
 
@@ -747,6 +747,46 @@ Post a new job
     </div>
 
 
+    <div className="space-y-2">
+
+        <Label htmlFor='update-is_active' className='text-sm font-medium flex items-center gap-2'>
+            {is_active ? (<CheckCircle size={16} className='text-green-600'/>
+            ) :
+            (
+                <XCircle size={16} className='text-gray-50'/>
+            )
+        }
+        </Label>
+
+  <Select value={is_active ? "true" : "false"} onValueChange={value => setis_active(value === "true")}>
+            <SelectTrigger className="h-11">
+                <SelectValue placeholder="Select status"/>
+            </SelectTrigger>
+
+<SelectContent>
+    <SelectItem value="true">
+        Active
+    </SelectItem>
+    <SelectItem value="false">
+        Inactive
+    </SelectItem>
+   
+
+ 
+
+
+
+</SelectContent>
+
+
+        </Select>
+
+
+
+
+    </div>
+
+
 
 </div>
 
@@ -763,10 +803,10 @@ Post a new job
         </DialogClose>
 
 
-<Button disabled={btnLoading} onClick={addJobHandler}
+<Button disabled={btnLoading} onClick={updateJobHandler}
 className="gap-2">
 
-{btnLoading ? "Updating job..." : "Post job"}
+{btnLoading ? "Updating job..." : "Update job"}
 
 </Button>
 

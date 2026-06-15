@@ -42,6 +42,9 @@ const clearData = () => {
 
 const token = Cookies.get("token")
 
+const [companyLoading , setCompanyLoading] = useState(true)
+
+
 async function fetchCompanies(){
 try {
   const {data}= await axios.get(`${job_service}/api/job/company/all` , {
@@ -53,6 +56,9 @@ try {
 
 } catch (error) {
   console.log(error);
+}
+finally{
+  setCompanyLoading(false)
 }
 }
 
@@ -168,7 +174,15 @@ useEffect(()=>
 
 
 
-<div className="p-6">
+{
+  companyLoading ? (
+    <Loading />
+  )
+  :
+  (
+
+  
+  <div className="p-6">
   {
     companies.length> 0 ? (<div className="grid gap-4">
       {
@@ -261,6 +275,8 @@ onClick = {()=> deleteCompany(c.company_id)}
   )
   }
 </div>
+  )
+}
 
 
     </Card>
