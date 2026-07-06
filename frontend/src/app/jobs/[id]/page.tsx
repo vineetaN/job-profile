@@ -15,9 +15,7 @@ const JobPage = () => {
   const {user , isAuth , applyJob , applications , btnLoading} = useAppData()
   const router = useRouter()
   const [job , setJob] = useState<Job | null>(null)
-
 const [applied , setApplied] = useState(false)
-
     useEffect(()=>{
         if(applications && id){
             applications.forEach((item:any)=>{
@@ -30,9 +28,7 @@ const [applied , setApplied] = useState(false)
     const applyJobHandler = (id : number) => {
       applyJob(id)
     }
-
     const [loading , setLoading] = useState(true);
-
     async function fetchSingleJob() {
       try {
         const {data} = await axios.get(`${job_service}/api/job/${id}`)
@@ -48,11 +44,7 @@ const [applied , setApplied] = useState(false)
     useEffect(()=>{
       fetchSingleJob()
     }, [id])
-
-
-
     const [jobApplications , setJobApplications] = useState<Application[]>([])
-
     const token = Cookies.get("token")
     async function fetchJobApplications() {
       try {
@@ -73,17 +65,12 @@ const [applied , setApplied] = useState(false)
         fetchJobApplications();
       }
     },[user , job]);
-
-
     const [filterStatus , setFilterStatus] = useState("All")
     const filteredApplications = filterStatus === "All" ? jobApplications : jobApplications.filter((app) => app.status === filterStatus);
-
     const [value , setValue] = useState("")
-
     const updateApplicationHandler = async(id : number) => {
       if(value === "") return toast.error("Please give valid value")
-
-        try {
+         try {
           const {data} = await axios.put(
             `${job_service}/api/job/application/${id}`,
             {status : value},
@@ -100,7 +87,6 @@ const [applied , setApplied] = useState(false)
           toast.error(error.response.data.message)
         }
     }
-
   return (
     <div className='min-h-screen bg-secondary/30'>
       {
@@ -111,9 +97,6 @@ const [applied , setApplied] = useState(false)
               <ArrowRight size={18} />
               Back to jobs
             </Button>
-
-
-
 <Card className='overflow-hidden shadow-lg border-2 mb-6'>
   <div className="bg-blue-600 p-8 border-b">
     <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -126,24 +109,16 @@ const [applied , setApplied] = useState(false)
 }`}>
   {job.is_active ? "Open" : "Closed"}
 </span>
-
         </div>
-
 <h1 className="text-3xl md:text-4xl font-bold mb-4 text-white">{job.title}</h1>
 <div className="flex items-center gap-2 text-base opacity-70 mb-2 text-white">
   <Building2 size={18}/>
   <span>Company Name</span>
-</div>
-
-
-
-      </div>
-
+</div>      </div>
 {
   user && user.role === "jobseeker" && <div className="shrink-0">
     {
       applied ? (<>
-
       <div className="flex items-center gap-2 px-6 py-3 rounded-lg bg-green-100 dark:bg-gray-900/30 text-green-600 font-medium">
       <CheckCircle2 size={20}/>
       Already Applied
@@ -157,18 +132,12 @@ const [applied , setApplied] = useState(false)
           {btnLoading ? "Applying...":"Easy Apply"}
         </Button>
       }
-      
       </>
    ) }
   </div>
 }
-
-
-
     </div>
   </div>
-
-
 {/**details */}
 <div className="p-8">
   <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -183,13 +152,6 @@ const [applied , setApplied] = useState(false)
         <p className="font-semibold">{job.location}</p>
       </div>
     </div>
-
-
-
-
-
-
-
  <div className="flex items-center gap-3 p-4 rounded-lg border bg-background">
       <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
       <DollarSign size={20} className='text-blue-600'/>
@@ -201,13 +163,6 @@ const [applied , setApplied] = useState(false)
         <p className="font-semibold">₹{job.salary} P.A</p>
       </div>
     </div>
-
-
-
-
-
-
-
  <div className="flex items-center gap-3 p-4 rounded-lg border bg-background">
       <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
       <Users size={20} className='text-blue-600'/>
@@ -219,47 +174,24 @@ const [applied , setApplied] = useState(false)
         <p className="font-semibold">{job.openings} positions</p>
       </div>
     </div>
-
   </div>
-
-
 {/** job descriptions */}
 <div className="space-y-4">
   <h2 className="text-2xl font-bold flex items-center gap-2">
     <Briefcase size={24} className='text-blue-600'/>
     Job Description
   </h2>
-
-
   <div className="p-6 rounded-lg bg-secondary border">
     <p className="text-base leading-relaxed whitespace-pre-line">
       {job.description}
     </p>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
 </div>
-
-
-
-</Card>
-
-
-
-          </div>
+</Card>     </div>
         }
         </>
       }
-
-
 {
   user && job && user.user_id === job.posted_by_recruiter_id && (
     <div className="w-[90%] md:w-2/3 container mx-auto mt-8 mb-8">
@@ -274,11 +206,9 @@ const [applied , setApplied] = useState(false)
              <option value="Submitted">Submitted</option>
               <option value="Hired">Hired</option>
                <option value="Rejected">Rejected</option>
-  
           </select>
         </div>
       </div>
-
 {
   jobApplications && jobApplications.length > 0 ? <>
   <div className="space-y-4">
@@ -286,25 +216,13 @@ const [applied , setApplied] = useState(false)
       <div className="p-4 rounded-lg border-2 bg-background" key={e.applicant_id}>
         <div className="flex items-center justify-between mb-3">
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${e.status === "Hired" ? "bg-green-100 dark:bg-green-900/30 text-green-600" : e.status === "Rejected" ? "bg-red-100 dark:bg-red-900/30 text-red-600" : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"}`}>
-          
-
           {e.status}
-          
-          
-          
           </span>
         </div>
-
 <div className="flex gap-3 mb-3">
   <Link target="_blank" href={e.resume} className='text-blue-500 hover:underline text-sm'> View Resume </Link>
-
-
-
     <Link target="_blank" href={`/account/${e.applicant_id}`} className='text-blue-500 hover:underline text-sm'> View Profile </Link>
 </div>
-
-
-
 {/** update status */}
 <div className="flex gap-2 pt-3 border-t">
   <select value={value} onChange={e => setValue(e.target.value)} className='flex-1 p-2 border-2 border-gray-300 rounded-md bg-background'>
@@ -320,27 +238,17 @@ const [applied , setApplied] = useState(false)
       </div>
     ))}
   </div>
-
   {
     filteredApplications.length === 0 && (<p className="text-center py-8 opacity-70">No application with status {filterStatus}</p>
   )}
   </> : (<>
-  
   <p className="text-center py-8 opacity-70">No application Yet.</p>
-  
   </>)
 }
-
     </div>
   )
 }
-
-
-
-
-
     </div>
   )
 }
-
 export default JobPage
