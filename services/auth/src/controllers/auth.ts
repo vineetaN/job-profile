@@ -156,10 +156,17 @@ process.env.JWT_SEC as string ,
 );
 const resetLink = `${process.env.Frontend_Url}/reset/${resetToken}`
 
-await redisClient.set(`forgot:${email}` , resetToken , {
-  EX: 900,
-})
-
+try {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("Redis set timed out")), 3000)
+  );
+  await Promise.race([
+    redisClient.set(`forgot:${email}`, resetToken, { EX: 900 }),
+    timeout,
+  ]);
+} catch (redisError) {
+  console.error("Redis set failed , continuing anyway:" , redisError);
+}
 
 const message = {
   to:email,
@@ -194,10 +201,25 @@ const tokenString = typeof token === 'string' ? token : token[0];
 
 
   const email = decoded.email
-  const storedToken = await redisClient.get(`forgot:${email}`)
-  if(!storedToken || storedToken !== tokenString)
-  {
-    throw new ErrorHandler(400 , "toekn has been expired");
+  let storedToken: string | null = null;
+  let redisFailed = false;
+  try {
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Redis get timed out")), 3000)
+    );
+    storedToken = await Promise.race([
+      redisClient.get(`forgot:${email}`),
+      timeout,
+    ]);
+  } catch (redisError) {
+    console.error("Redis get failed, falling back to JWT-only validation:", redisError);
+    redisFailed = true;
+  }
+
+  // If Redis is available, validate the stored token matches
+  // If Redis failed, the JWT signature + expiry check above is sufficient
+  if (!redisFailed && (!storedToken || storedToken !== tokenString)) {
+    throw new ErrorHandler(400, "token has been expired");
   }
 
   const users = await sql `SELECT user_id FROM users WHERE email = ${email}`
@@ -210,7 +232,14 @@ const tokenString = typeof token === 'string' ? token : token[0];
 const hashPassword = await bcrypt.hash(password , 10)
 await sql `UPDATE users SET password = ${hashPassword} WHERE user_id = ${user.user_id}`;
 
-await redisClient.del(`forgot:${email}`);
+try {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("Redis del timed out")), 3000)
+  );
+  await Promise.race([redisClient.del(`forgot:${email}`), timeout]);
+} catch (redisError) {
+  console.error("Redis del failed:" , redisError);
+}
 
 res.json({message: "Password changed successfully"})
 

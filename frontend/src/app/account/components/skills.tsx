@@ -1,6 +1,7 @@
 "use client"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { useAppData } from '@/context/AppContext'
 import { AccountProps } from '@/type'
 import { Award, Plus, Sparkles, X } from 'lucide-react'

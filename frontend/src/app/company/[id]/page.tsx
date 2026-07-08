@@ -7,10 +7,10 @@ import axios from 'axios'
 import Loading from "@/components/loading"
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import { Button } from '@base-ui/react'
-import { Briefcase, Building2, Car, CheckCircle, Clock, DollarSign, Eye, FileText, Globe, Laptop, MapPin, Pencil, Plus, Trash2, Users, XCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Briefcase, Building2, CheckCircle, Clock, DollarSign, Eye, FileText, Globe, Laptop, MapPin, Pencil, Plus, Trash2, Users, XCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { Job } from '@/type'
+import { Company, Job } from '@/type'
 import { Dialog, DialogContent, DialogHeader, DialogTrigger , DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -235,11 +235,13 @@ if(loading) return <Loading />
 
 {
     isRecruiterOwner && <>
-    <DialogTrigger asChild>
-        <Button className="gap-2">
+    <DialogTrigger
+        render={
+          <Button className="gap-2">
             <Plus size={18}/> Post New Job
-        </Button>
-    </DialogTrigger>
+          </Button>
+        }
+    />
 
 
 
@@ -282,7 +284,7 @@ Post a new job
 <Building2 size={16}/> Role/Department
 
         </Label>
-        <Input id="role type="text" placeholder = "Enter Job Role" className="h-11" value={role}
+        <Input id="role" type="text" placeholder = "Enter Job Role" className="h-11" value={role}
         onChange = {(e) => setrole(e.target.value)} />
 
       </div>
@@ -611,7 +613,7 @@ Update Job
 <Building2 size={16}/> Role/Department
 
         </Label>
-        <Input id="role type="text" placeholder = "Enter Job Role" className="h-11" value={role}
+        <Input id="role" type="text" placeholder = "Enter Job Role" className="h-11" value={role}
         onChange = {(e) => setrole(e.target.value)} />
 
       </div>

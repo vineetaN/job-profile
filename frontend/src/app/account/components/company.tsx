@@ -6,12 +6,13 @@ import Loading from '@/components/loading';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
-import { Building2, Plus } from 'lucide-react';
-import { Button } from '@base-ui/react';
+import { Briefcase, Building2, Eye, FileText, Globe, Image, Plus, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Company as CompanyType } from '@/type';
 import Link from "next/link"
-import trash2 from "lucide-react"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 const Company = () => {
   const {loading} = useAppData();
@@ -75,7 +76,7 @@ async function addCompanyHandler(){
 
 try {
   setBtnLoading(true)
-  const {data}= await axios.post(`${job_service}/api/job/company/new` , FormData , 
+  const {data}= await axios.post(`${job_service}/api/job/company/new` , formData , 
     {
       headers : {
         Authorization : `Bearer ${token}`,
@@ -93,14 +94,6 @@ finally{
 }
 
 }
-
-
-
-
-
-
-
-
 
 
 async function deleteCompany(id : string){
@@ -144,7 +137,7 @@ useEffect(()=>
       <div className="bg-blue-500 p-6 border-b">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-centerjustify-center">
+            <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
               <Building2 size={20} className='text-blue-600'></Building2>
             </div>
           </div>
@@ -189,10 +182,10 @@ useEffect(()=>
         companies.map((c)=>(
           <div key={c.company_id}
           
-          className="flex items-center gap-4 p-4 rounded-lg border-2 hover:border-blue-500 transition-allbg-background">
+          className="flex items-center gap-4 p-4 rounded-lg border-2 hover:border-blue-500 transition-all bg-background">
           
           <div className="h-16 w-16 rounded-full border-2 overflow-hidden shrink-0 bg-background">
-            <img src="{c.logo}" alt="" className="w-full h-full object-cover" />
+            <img src={c.logo} alt="" className="w-full h-full object-cover" />
           </div>
 
 
@@ -234,12 +227,6 @@ onClick = {()=> deleteCompany(c.company_id)}
    
   </Button>
 
-
-
-
-
-
-  
 </div>
 
 
@@ -284,7 +271,7 @@ onClick = {()=> deleteCompany(c.company_id)}
 
 {/** Add Company Dialog */}
 <Dialog>
-  <DialogTrigger asChild>
+  <DialogTrigger>
     <Button className="hidden" ref={addRef}>
 
     </Button>
@@ -293,7 +280,7 @@ onClick = {()=> deleteCompany(c.company_id)}
   <DialogContent className="sm:max-w-[550px]">
     <DialogHeader>
 
-<DialogTitle className="text-2xl flx items-center gap-2">
+<DialogTitle className="text-2xl flex items-center gap-2">
   <Building2 className="text-blue-600"/>
   Add New Company
 </DialogTitle>
@@ -333,7 +320,7 @@ onClick = {()=> deleteCompany(c.company_id)}
 <Globe size={16}/> Website
 
         </Label>
-        <Input id="website" type="text" placeholder = "Enter Description" className="h-11" value={website}
+        <Input id="website" type="text" placeholder = "Enter website URL" className="h-11" value={website}
         onChange = {(e) => setWebsite(e.target.value)} />
 
       </div>
@@ -344,18 +331,13 @@ onClick = {()=> deleteCompany(c.company_id)}
 <div className="space-y-2">
         <Label htmlFor="logo" className="text-sm font-medium flex items-center gap-2">
 
-<Image size={16}/> CompanyLogo
+<Image size={16}/> Company Logo
 
         </Label>
         <Input id="logo" type="file" accept = "image/*" className="h-11 cursor-pointer" 
         onChange = {(e : React.ChangeEvent<HTMLInputElement>) => setLogo(e.target.files?.[0] || null)} />
 
       </div>
-
-
-
-
-
 
 
     </div>
@@ -375,10 +357,6 @@ onClick = {()=> deleteCompany(c.company_id)}
 
 
   </div>
-
-  return (
-    <div></div>
-  )
 }
 
 export default Company;

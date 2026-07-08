@@ -106,13 +106,15 @@ const CarrerGuide = () => {
         </p>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger>
-            <Button size={"lg"} className="gap-2 h-12 px-8">
-              <Sparkles size={18} />
-              Get Carrer Guidance
-              <ArrowRight size={18} />
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button size={"lg"} className="gap-2 h-12 px-8">
+                <Sparkles size={18} />
+                Get Carrer Guidance
+                <ArrowRight size={18} />
+              </Button>
+            }
+          />
 
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             {!response ? (

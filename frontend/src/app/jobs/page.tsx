@@ -79,8 +79,7 @@ const hasActiveFilters = title || location;
     <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
         <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                Explore   
-                <span className="text-red-500">
+                Explore <span className="text-red-500">
                     Opportunities
                 </span>
             </h1>
@@ -163,7 +162,7 @@ const hasActiveFilters = title || location;
 </div>
 
 <Dialog>
-    <DialogTrigger asChild>
+    <DialogTrigger asChild={false}>
         <Button ref={ref} className="hidden"></Button>
     </DialogTrigger>
 
@@ -227,6 +226,10 @@ const hasActiveFilters = title || location;
     <Button variant={"outline"} onClick={clearFilter}
     className="flex-1">
         Clear All
+    </Button>
+    <Button onClick={() => ref.current?.click()}
+    className="flex-1">
+        Apply Filters
     </Button>
 </DialogFooter>
 

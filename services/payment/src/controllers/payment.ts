@@ -1,6 +1,8 @@
 import { TryCatch } from "../utils/TryCatch.js";
 import { AuthenticatedRequest } from "../middleware/auth.js";
 import ErrorHandler from "../utils/errorHandler.js";
+import { sql } from "../utils/db.js";
+import { instance } from "../index.js";
 import crypto from "crypto"
 
 export const checkOut = TryCatch(async(req:AuthenticatedRequest , res)=>{
@@ -10,7 +12,7 @@ export const checkOut = TryCatch(async(req:AuthenticatedRequest , res)=>{
 
   const userId = req.user.user_id;
 
-  const [user] = await sql `SELECT * FROM users WHERE user_id = ${user_id}`;
+  const [user] = await sql `SELECT * FROM users WHERE user_id = ${userId}`;
 
   const subTime = user?.subscription ? new Date(user.subscription).getTime() : 0;
 
@@ -26,7 +28,7 @@ export const checkOut = TryCatch(async(req:AuthenticatedRequest , res)=>{
     amount: Number(119 * 100),
     currency : "INR",
     notes : {
-      user_id: user_id.toString(),
+      user_id: userId.toString(),
     }
   };
 
@@ -67,8 +69,4 @@ export const paymentVerification = TryCatch(async(req:AuthenticatedRequest , res
       message : "Payment Failed",
     })
   }
-}
-
-
-
-)
+})

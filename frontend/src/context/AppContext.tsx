@@ -1,5 +1,5 @@
 "use client"
-import { AppContextType, AppProviderProps, User } from "@/type";
+import { AppContextType, Application, AppProviderProps, User } from "@/type";
 import { createContext, useContext, useEffect, useState } from "react"
 import toast, {Toaster} from "react-hot-toast"
 import Cookies from "js-cookie";
@@ -21,6 +21,10 @@ export const AppProvider : React.FC<AppProviderProps> = ({children}) => {
 const token = Cookies.get("token")
 
 async function fetchUser(){
+  if(!token) {
+    setLoading(false);
+    return;
+  }
   try {
     const {data}= await axios.get(`${user_service}/api/user/me`,{
       headers: {
@@ -30,6 +34,7 @@ async function fetchUser(){
 
     setUser(data);
     setIsAuth(true);
+    fetchApplications();
 
   } catch (error) {
     console.log(error);
@@ -131,6 +136,7 @@ async function logoutUser(){
  setUser(null)
  setIsAuth(false);
  toast.success("Logged out successfully")
+ setTimeout(() => { window.location.href = "/"; }, 300);
 }
 
 
@@ -155,10 +161,41 @@ finally{
 }
 }
 
+async function applyJob(job_id : number){
+  try {
+    const {data} = await axios.post(`${user_service}/api/user/apply/job` , {job_id} , {
+      headers : {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    toast.success(data.message);
+    fetchApplications();
+  } catch (error : any) {
+    toast.error(error.response?.data?.message || "Something went wrong")
+  }
+}
+
+const [applications , setApplications] = useState<Application[]>([])
+
+
+async function fetchApplications(){
+  try {
+    const {data}= await axios.get(
+      `${user_service}/api/user/application/all`,
+      {
+        headers : {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    setApplications(data);
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
 async function removeSkill(skill: string 
-
 ){
   
 try {
@@ -173,20 +210,11 @@ try {
 } catch (error : any) {
   toast.error(error.response.data.message)
 }
-
 }
-
-
-
-
-
-
 
 useEffect(()=>{
   fetchUser()
 },[]);
-
-
 
 
   return <AppContext.Provider value={{ user , loading , btnLoading , setUser ,  isAuth , setIsAuth , setLoading,
@@ -195,7 +223,10 @@ useEffect(()=>{
     updateResume,
     updateUser,
     addSkill , 
-    removeSkill
+    removeSkill,
+    applyJob,
+    applications,
+    fetchApplications,
   }}>
     {children}
     <Toaster/>

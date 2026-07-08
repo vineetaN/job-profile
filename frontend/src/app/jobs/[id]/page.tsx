@@ -4,11 +4,13 @@ import { Card } from '@/components/ui/card'
 import { job_service, useAppData } from '@/context/AppContext'
 import { Application, Job } from '@/type'
 import axios from 'axios'
-import { ArrowRight, Briefcase, Building2, CheckCircle2, DollarSign, Link, MapPin, Users } from 'lucide-react'
+import { ArrowRight, Briefcase, Building2, CheckCircle2, DollarSign, MapPin, Users } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import Cookies from "js-cookie"
 import toast from 'react-hot-toast'
+import Loading from '@/components/loading'
+import Link from 'next/link'
 
 const JobPage = () => {
   const {id} = useParams()
@@ -48,7 +50,7 @@ const [applied , setApplied] = useState(false)
     const token = Cookies.get("token")
     async function fetchJobApplications() {
       try {
-        const {data}= await axios.get(`${job_service}/api/job/application/update/${id}`,
+        const {data}= await axios.get(`${job_service}/api/job/application/${id}`,
           {
             headers : {
               Authorization : `Bearer ${token}`,

@@ -13,10 +13,13 @@ interface JobCardProps{
 
 
 const JobCard : React.FC<JobCardProps> = ({job}) => {
-    const {user , btnLoading , applyJob , applications} = useAppData();
+    const {user , applyJob , applications} = useAppData();
+    const [cardBtnLoading, setCardBtnLoading] = useState(false);
 
-    const appplyJobHandler = (id: number) => {
-        applyJob(id)
+    const appplyJobHandler = async (id: number) => {
+        setCardBtnLoading(true);
+        await applyJob(id);
+        setCardBtnLoading(false);
     }
 
     const [applied , setApplied] = useState(false)
@@ -45,7 +48,7 @@ const JobCard : React.FC<JobCardProps> = ({job}) => {
 
             </div>
 
-<Link href={'/company/${job.company_id}'} className='shrink-0'>
+<Link href={`/company/${job.company_id}`} className='shrink-0'>
 <div className="w-14 h-14 rounded-xl border-2 overflow-hidden hover:scale-105 transition-transform bg-background">
     <img src={job.company_logo} alt="" className='w-full h-full object-cover'/>
 </div>
@@ -92,7 +95,7 @@ const JobCard : React.FC<JobCardProps> = ({job}) => {
 
 {
     applied? <div className='flex-1 flex items-center justify-center gap-2 text-green-600 font-medium text-sm bg-green-100 dark:bg-green-900/30 rounded-md px-3 py-2'> <CheckCircle size={15}/> Applied </div> : <>
-     {job.is_active !== false && (<Button disabled={btnLoading} onClick={()=> appplyJobHandler(job.job_id)}  className="flex-1 gap-2"> <Briefcase size={16} /> Easy Apply </Button> )} 
+     {job.is_active !== false && (<Button disabled={cardBtnLoading} onClick={()=> appplyJobHandler(job.job_id)}  className="flex-1 gap-2"> <Briefcase size={16} /> Easy Apply </Button> )} 
     
     
     </>

@@ -7,7 +7,7 @@ import React, { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Briefcase, Lock, Mail } from "lucide-react";
+import { ArrowRight, Briefcase, Eye, EyeOff, FileText, Lock, Mail, Upload } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ const RegisterPage = () => {
   const [resume , setResume] = useState <File | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
   const { isAuth, setUser, loading, setIsAuth } = useAppData();
 
@@ -100,8 +101,7 @@ required
 >
 <option value="">Select your role</option>
 <option value="jobseeker">Find a Job</option>
-<option value="recruiter
-">Hire Talent</option>
+<option value="recruiter">Hire Talent</option>
 
 
 </select>
@@ -189,13 +189,20 @@ required
                 <Lock className="icon-style" />
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="******"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="pl-10 h-11 "
-                ></Input>
+                  className="pl-10 pr-10 h-11"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
@@ -213,24 +220,29 @@ required
               <Label htmlFor="resume" className="text-sm font-medium">
                Resume (PDF)
               </Label>
-              <div className="relative">
-                <Lock className="icon-style" />
-                <Input
-                  id="resume"
-                  type="file"
-                
-                  accept = "application/pdf"
-                 
-               
-                  onChange={e => {
-                    if(e.target.files && e.target.files[0])
-                    {
-                      setResume(e.target.files[0])
-                    }
-                  }}
-                  className=" h-11 cursor-pointer"
-                ></Input>
+              <div
+                onClick={() => document.getElementById("resume")?.click()}
+                className={`h-11 flex items-center gap-3 px-4 border-2 rounded-md cursor-pointer transition-colors
+                  ${resume ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : "border-gray-300 hover:border-blue-400"}`}
+              >
+                <Upload size={16} className="opacity-50 shrink-0" />
+                <span className={`text-sm truncate ${resume ? "text-blue-600 font-medium" : "opacity-50"}`}>
+                  {resume ? resume.name : "Click to upload PDF"}
+                </span>
+                {resume && <FileText size={16} className="ml-auto text-blue-500 shrink-0" />}
               </div>
+              <Input
+                id="resume"
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={e => {
+                  if(e.target.files && e.target.files[0])
+                  {
+                    setResume(e.target.files[0])
+                  }
+                }}
+              />
             </div>
 
 
@@ -290,7 +302,7 @@ required
             <p className="text-center text-sm">
               Already have an account?{" "}
               <Link
-                href={"/register"}
+                href={"/login"}
                 className="text-blue-500 font-medium hover:underline transition-all"
               >
                  Login?

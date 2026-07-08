@@ -1,25 +1,26 @@
 import { AccountProps } from '@/type'
 import React, { ChangeEvent, useRef, useState } from 'react'
 import { Card } from '@/components/ui/card'
-import { AlertTriangle, Briefcase, Camera, CheckCircle2, Crown, Edit, FileText, Link, Mail, NotepadText, Phone, RefreshCcw, UserIcon } from 'lucide-react'
+import { AlertTriangle, Briefcase, Camera, CheckCircle2, Crown, Edit, FileText, Mail, NotepadText, Phone, RefreshCcw, UserIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAppData } from '@/context/AppContext'
-import { Dialog, DialogContent, DialogHeader, DialogTrigger ,
+import { Dialog, DialogContent, DialogHeader,
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 
 const Info : React.FC<AccountProps>= ({user , isYourAccount}) => {
 
 
 const inputRef = useRef<HTMLInputElement | null>(null)
-const editRef = useRef<HTMLButtonElement | null>(null)
 const resumeRef = useRef<HTMLInputElement | null>(null)
 
+const [editOpen, setEditOpen] = useState(false);
 const [name , setName] = useState("");
 const [phoneNumber , setPhoneNumber] = useState("")
 const [bio , setBio] = useState("");
@@ -43,7 +44,7 @@ const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
 };
 
 const handleEditClick = () =>{
-  editRef.current?.click();
+  setEditOpen(true);
   setName(user.name);
   setPhoneNumber(user.phone_number);
   setBio(user.bio || "");
@@ -351,13 +352,7 @@ onChange={changeResume}
       </Card>
 
 {/**Dialog box for edit */}
-<Dialog>
-  <DialogTrigger asChild>
-    <Button ref={editRef} variant={"outline"}
-    className="hidden">
-      Edit Profile
-    </Button>
-  </DialogTrigger>
+<Dialog open={editOpen} onOpenChange={setEditOpen}>
 
 <DialogContent className= "sm:max-w-[500px]">
   <DialogHeader>

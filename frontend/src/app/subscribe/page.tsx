@@ -1,7 +1,7 @@
 "use client"
 
 import useRazorpay from '@/components/scriptLoader'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
@@ -13,9 +13,6 @@ import { CheckCircle, Crown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 
-
-
-
 const SubscriptionPage = () => {
   const razorpayLoaded = useRazorpay()
   const router = useRouter();
@@ -24,62 +21,60 @@ const SubscriptionPage = () => {
 const {setUser} = useAppData()
 
 
-
-
   const handleSubscribe = async() => {
     const token = Cookies.get("token")
     setLoading(true);
 
-    const {data : {order}} = await axios.post(`${payment_service}/api/payment/checkout` ,{}, {
-headers: {
-  Authorization: `Bearer ${token}`
-}
-    })
-
-
-
-
-
-    const options = {
-        key: 'rzp_test_PWYingakWMfLag', // Replace with your Razorpay key_id
-        amount: order.id, // Amount is in currency subunits.
-        currency: 'INR',
-        name: 'Hire Heaven',
-        description: 'Find job easily',
-        order_id: order.id, // This is the order_id created in the backend
-      handler : async function (response:any) {
-        const {razorpay_order_id , razorpay_payment_id , razorpay_signature} = response;
-
-        try {
-          const {data} = await axios.post(`${payment_service}/api/payment/verify` , {razorpay_order_id , razorpay_payment_id , razorpay_signature},{
-            headers : {
-              Authorization : `Bearer ${token}`
-            }
-          })
-          toast.success(data.message)
-
-          setUser(data.updatedUser)
-          router.push(`/payment/success/${razorpay_payment_id}`)
-          setLoading(false);
-
-
-        } catch (error : any) {
-          setLoading(false);
-          toast.error(error.response.data.message)
+    try {
+      const {data : {order}} = await axios.post(`${payment_service}/api/payment/checkout` ,{}, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      })
 
-      },
-        theme: {
-          color: '#F37254'
+      const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY || 'rzp_test_PWYingakWMfLag',
+          amount: order.amount,
+          currency: 'INR',
+          name: 'Hire Heaven',
+          description: 'Find job easily',
+          order_id: order.id,
+        handler : async function (response:any) {
+          const {razorpay_order_id , razorpay_payment_id , razorpay_signature} = response;
+
+          try {
+            const {data} = await axios.post(`${payment_service}/api/payment/verify` , {razorpay_order_id , razorpay_payment_id , razorpay_signature},{
+              headers : {
+                Authorization : `Bearer ${token}`
+              }
+            })
+            toast.success(data.message)
+            setUser(data.updatedUser)
+            router.push(`/payment/success/${razorpay_payment_id}`)
+          } catch (error : any) {
+            toast.error(error.response.data.message)
+          }
+          finally{
+            setLoading(false);
+          }
         },
-      };
+          theme: {
+            color: '#F37254'
+          },
+        };
 
-if(!razorpayLoaded)
+      if(!razorpayLoaded){
+        setLoading(false);
+        return console.log("Razorpay script not loaded");
+      }
 
-  console.log("some thing went wrong with the script");
-  const razorpay = new window.Razorpay(options);
-  razorpay.open();
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
 
+    } catch (error : any) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+      setLoading(false);
+    }
   };
 
   if(loading)
@@ -91,6 +86,7 @@ return <Loading />
     <Card className="max-w-md w-full p-8 text-center shadow-lg border-2">
       <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
         <Crown size={32} className='text-blue-600'/>
+      </div>
 
 <h1 className="text-3xl font-bold mb-2">
   Premium Subscription
@@ -109,34 +105,19 @@ return <Loading />
 
 <div className="space-y-3 mb-8 text-left">
   <div className="flex items-start gap-3">
-    <CheckCircle size={20} className='text-green-600 hrink-0 mt-0.5'/>
+    <CheckCircle size={20} className='text-green-600 shrink-0 mt-0.5'/>
     <p className="text-sm">
-      Your application will be hsown first to recruiters .
+      Your application will be shown first to recruiters.
     </p>
   </div>
 
-
-
-
-<div className="flex items-start gap-3">
-    <CheckCircle size={20} className='text-green-600 hrink-0 mt-0.5'/>
+  <div className="flex items-start gap-3">
+    <CheckCircle size={20} className='text-green-600 shrink-0 mt-0.5'/>
     <p className="text-sm">
       Priority support
     </p>
   </div>
-
-
-
-
-
-
-
-
 </div>
-
-
-      </div>
-
 
 <Button onClick={handleSubscribe} className="w-full h-12 text-base gap-2">
   <Crown size={18}/>
