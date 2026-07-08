@@ -94,6 +94,11 @@ addSkill : (skill : string,
 removeSkill : (skill : string
 ) => Promise<void>;
 
+applyJob: (job_id : number) => Promise<void>;
+
+applications: Application[];
+fetchApplications : () => Promise<void>
+
 }
 
 export interface AppProviderProps{
